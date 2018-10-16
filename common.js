@@ -204,7 +204,6 @@ function pagingLoad(options) { //分页加载
         el: options.el, //滚动的对象
         apiUrl: options.url,
         data: options.data || {},
-        tailload: true,
         sucload: true,
         totalpage: options.totalpage, //总页数
         containArea: options.containArea, //内容区
@@ -215,23 +214,15 @@ function pagingLoad(options) { //分页加载
         var scrollTop = this.scrollTop, //滚动条距顶部的高度
             containHei = _this.oPageLoad.containArea.scrollHeight, //内容高度(scrollHeight)
             clientHei = this.clientHeight; //可视高度
-        console.log('当前总页数' + _this.oPageLoad.totalpage, scrollTop, containHei, clientHei);
         if (_this.oPageLoad.page == _this.oPageLoad.totalpage && containHei - scrollTop - clientHei < 20) { //判断页码是否等于总页码且滚动条到达最底部
-            if (_this.oPageLoad.tailload) {
-                _this.loadTxt.innerHTML = "已全部加载完成";
-                _this.oPageLoad.tailload = !_this.oPageLoad.tailload;
-                return;
-            } else {
                 _this.loadTxt.innerHTML = "已全部加载完成";
                 return;
-            }
         };
 
         if (containHei - scrollTop - clientHei < 20 && _this.oPageLoad.sucload) {
             _this.oPageLoad.page++;
             _this.oPageLoad.sucload = !_this.oPageLoad.sucload;
             _this.loadTxt.innerHTML = "加载中...";
-            console.log('loading...第' + _this.oPageLoad.page + '页');
             _this.oPageLoad.data["page"] = _this.oPageLoad.page;
             httpGet(_this.oPageLoad.apiUrl, _this.oPageLoad.data, function (data) {//请求加载
                 commonArray = commonArray.concat(data);
@@ -642,3 +633,12 @@ function looseEqual(a, b) {//check two parameter is looslyEqual or not(===)
         return false
     }
 };
+
+/**
+* @desc 判断元素是否在视图范围
+* @param {elem} 当前元素
+*/
+function elemIsInview (elem) {
+    var elemPosition = elem.getBoundingClientRect();
+    return (elemPosition.top >= 0 && elemPosition.left >= 0 && elemPosition.bottom <= (window.innerHeight || document.documentElement.clientHeight &&　elemPosition.right <= (window.innerWidth || document.documentElement.clientWidth)))
+}
